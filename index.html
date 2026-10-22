@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Sinh Học - Dinh Dưỡng & Tiêu Hóa Ở Động Vật</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        jungle: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            200: '#bbf7d0',
+                            300: '#86efac',
+                            400: '#4ade80',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                            950: '#052e16',
+                            emerald: '#10b981',
+                            neon: '#00ff87',
+                            amber: '#f59e0b',
+                            coral: '#ff6b6b'
+                        }
+                    },
+                    animation: {
+                        'float-1': 'float 7s ease-in-out infinite',
+                        'float-2': 'floatReverse 9s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2.5s ease-in-out infinite',
+                        'shake': 'shake 0.45s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop-in': 'popIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg) scale(1)' },
+                            '50%': { transform: 'translateY(-20px) rotate(8deg) scale(1.05)' },
+                        },
+                        floatReverse: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg) scale(1)' },
+                            '50%': { transform: 'translateY(20px) rotate(-8deg) scale(0.95)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '0.6', filter: 'drop-shadow(0 0 15px rgba(0, 255, 135, 0.4))' },
+                            '50%': { opacity: '1', filter: 'drop-shadow(0 0 30px rgba(0, 255, 135, 0.8))' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(6px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-8px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(8px, 0, 0)' },
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.92) translateY(12px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #064e3b 0%, #022c22 45%, #021a14 100%);
+            min-height: 100vh;
+            color: #f0fdf4;
+            overflow-x: hidden;
+        }
+
+        /* Biophilic Modern Jungle Glass Panel */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(6, 78, 59, 0.55) 0%, rgba(2, 44, 34, 0.75) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 255, 135, 0.2);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.65),
+                        inset 0 1px 2px rgba(255, 255, 255, 0.15),
+                        0 0 40px rgba(0, 255, 135, 0.1);
+        }
+
+        .glass-card {
+            background: rgba(15, 118, 110, 0.2);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(52, 211, 153, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Interactive Option Buttons */
+        .option-btn {
+            position: relative;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: rgba(0, 255, 135, 0.12);
+            border-color: rgba(0, 255, 135, 0.6);
+            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 12px 25px rgba(0, 255, 135, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .option-btn:active:not(:disabled) {
+            transform: translateY(-1px) scale(0.99);
+        }
+
+        /* Particle Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Shining Metallic Button */
+        .btn-shine {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-shine::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                60deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.35) 50%,
+                transparent 70%
+            );
+            transform: rotate(30deg);
+            transition: all 0.7s ease;
+            opacity: 0;
+        }
+        .btn-shine:hover::after {
+            opacity: 1;
+            left: 100%;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(2, 44, 34, 0.8);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 135, 0.4);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="relative flex flex-col justify-between items-center p-3 sm:p-6 md:p-8 text-emerald-50 selection:bg-jungle-400 selection:text-jungle-950 overflow-x-hidden min-h-screen">
+
+    <!-- Interactive Canvas Particles Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Biophilic Floating Decorative Icons -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <i class="fa-solid fa-leaf text-jungle-400/15 text-7xl sm:text-8xl absolute top-10 left-8 animate-float-1"></i>
+        <i class="fa-solid fa-dna text-jungle-neon/15 text-8xl sm:text-9xl absolute bottom-16 left-12 animate-float-2"></i>
+        <i class="fa-solid fa-apple-whole text-emerald-300/15 text-6xl sm:text-7xl absolute top-1/4 right-10 animate-float-1"></i>
+        <i class="fa-solid fa-viruses text-jungle-300/15 text-7xl sm:text-8xl absolute bottom-24 right-12 animate-float-2"></i>
+        <i class="fa-solid fa-seedling text-jungle-400/15 text-6xl absolute top-1/2 left-6 animate-float-1"></i>
+    </div>
+
+    <!-- Main Outer Wrapper -->
+    <div class="w-full max-w-3xl relative z-10 my-auto py-2">
+        
+        <!-- Header Banner -->
+        <header class="text-center mb-5">
+            <div class="inline-flex items-center gap-3 px-5 py-2 rounded-full glass-card border border-jungle-400/30 mb-2 shadow-2xl">
+                <span class="w-9 h-9 rounded-full bg-gradient-to-tr from-jungle-500 via-jungle-emerald to-jungle-neon flex items-center justify-center text-jungle-950 font-black text-lg shadow-lg animate-pulse-glow">
+                    <i class="fa-solid fa-dna"></i>
+                </span>
+                <span class="font-display font-black text-2xl sm:text-3xl tracking-wide bg-gradient-to-r from-emerald-200 via-jungle-300 to-jungle-neon bg-clip-text text-transparent">
+                    SINH HỌC 11
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full bg-jungle-400/20 text-jungle-300 text-xs font-bold border border-jungle-400/40 uppercase tracking-wider">
+                    BÀI 8
+                </span>
+            </div>
+            <h1 class="text-lg sm:text-xl font-extrabold text-emerald-100/90 tracking-tight">
+                Dinh Dưỡng & Tiêu Hóa Ở Động Vật
+            </h1>
+        </header>
+
+        <!-- Main Glass Card Container -->
+        <main id="main-panel" class="glass-panel rounded-3xl p-5 sm:p-8 md:p-10 relative overflow-hidden transition-all duration-300">
+            
+            <!-- Sound Toggle Button -->
+            <button id="mute-btn" onclick="toggleMute()" class="absolute top-5 right-5 w-10 h-10 rounded-2xl glass-card hover:bg-jungle-500/30 text-jungle-300 flex items-center justify-center transition border border-jungle-400/30 shadow-lg z-20 group" title="Bật/Tắt âm thanh">
+                <i id="mute-icon" class="fa-solid fa-volume-high text-base group-hover:scale-110 transition-transform"></i>
+            </button>
+
+            <!-- ================= START SCREEN ================= -->
+            <div id="start-screen" class="text-center py-4 sm:py-6 animate-pop-in">
+                <div class="relative w-28 h-28 mx-auto mb-6">
+                    <div class="absolute inset-0 bg-jungle-neon/20 rounded-3xl blur-2xl animate-pulse-glow"></div>
+                    <div class="relative w-full h-full bg-gradient-to-tr from-jungle-700 via-jungle-600 to-jungle-emerald rounded-3xl flex items-center justify-center text-jungle-neon text-5xl shadow-2xl border-2 border-jungle-300/40">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                </div>
+
+                <h2 class="font-display text-2xl sm:text-4xl font-black text-white mb-3 tracking-tight">
+                    Thử Thách Kiến Thức Tiêu Hóa
+                </h2>
+                <p class="text-emerald-100/80 mb-6 max-w-lg mx-auto text-xs sm:text-base leading-relaxed">
+                    Khám phá <span class="font-bold text-jungle-neon underline decoration-jungle-emerald decoration-2">7 câu hỏi trắc nghiệm chuẩn</span>. Bạn <span class="text-amber-300 font-bold">BẮT BUỘC chọn ĐÚNG</span> câu hiện tại mới có thể mở khóa tiến vào câu tiếp theo!
+                </p>
+                
+                <!-- Rule Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 border border-amber-400/40 text-amber-300 text-xs sm:text-sm font-semibold mb-8">
+                    <i class="fa-solid fa-lock text-amber-400"></i>
+                    <span>Quy tắc: Chọn sai sẽ bị khóa lựa chọn đó - Hãy suy luận chính xác!</span>
+                </div>
+
+                <!-- Topic Badges Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 max-w-xl mx-auto mb-8 text-xs font-semibold">
+                    <div class="glass-card p-3 rounded-2xl flex flex-col items-center border border-jungle-500/20 hover:border-jungle-400/50 transition">
+                        <i class="fa-solid fa-list-ol text-jungle-neon text-xl mb-1"></i>
+                        <span class="text-emerald-200">1. 4 Giai đoạn</span>
+                    </div>
+                    <div class="glass-card p-3 rounded-2xl flex flex-col items-center border border-jungle-500/20 hover:border-jungle-400/50 transition">
+                        <i class="fa-solid fa-bacteria text-jungle-neon text-xl mb-1"></i>
+                        <span class="text-emerald-200">2-3. Các hình thức</span>
+                    </div>
+                    <div class="glass-card p-3 rounded-2xl flex flex-col items-center border border-jungle-500/20 hover:border-jungle-400/50 transition">
+                        <i class="fa-solid fa-arrows-left-right-to-line text-jungle-neon text-xl mb-1"></i>
+                        <span class="text-emerald-200">4-5. Ống tiêu hóa</span>
+                    </div>
+                    <div class="glass-card p-3 rounded-2xl flex flex-col items-center border border-jungle-500/20 hover:border-jungle-400/50 transition">
+                        <i class="fa-solid fa-apple-whole text-jungle-neon text-xl mb-1"></i>
+                        <span class="text-emerald-200">6-7. Sức khỏe</span>
+                    </div>
+                </div>
+
+                <button onclick="startQuiz()" class="btn-shine w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-jungle-500 via-jungle-emerald to-jungle-neon text-jungle-950 font-display font-black text-lg rounded-2xl shadow-xl shadow-jungle-emerald/30 hover:scale-105 active:scale-95 transition duration-300 flex items-center justify-center mx-auto gap-3">
+                    <span>BẮT ĐẦU NGAY</span>
+                    <i class="fa-solid fa-play text-base"></i>
+                </button>
+            </div>
+
+            <!-- ================= QUIZ PLAYING SCREEN ================= -->
+            <div id="quiz-screen" class="hidden">
+                
+                <!-- Status & Progress Header -->
+                <div class="mb-5">
+                    <div class="flex justify-between items-center mb-2.5 text-xs sm:text-sm font-bold">
+                        <span id="question-number" class="px-3.5 py-1.5 rounded-xl glass-card border border-jungle-400/30 text-jungle-300 flex items-center gap-2">
+                            <i class="fa-solid fa-layer-group text-jungle-neon"></i> Câu 1 / 7
+                        </span>
+                        <span id="attempt-count" class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center gap-2">
+                            <i class="fa-solid fa-arrows-rotate"></i> Chọn sai: 0
+                        </span>
+                    </div>
+
+                    <!-- Glowing Progress Bar -->
+                    <div class="w-full bg-black/40 h-3 rounded-full overflow-hidden p-0.5 border border-jungle-500/30 shadow-inner">
+                        <div id="progress-bar" class="bg-gradient-to-r from-jungle-500 via-jungle-emerald to-jungle-neon h-full rounded-full transition-all duration-500 shadow-lg shadow-jungle-neon/50 w-0"></div>
+                    </div>
+                </div>
+
+                <!-- Topic Indicator -->
+                <div class="mb-3">
+                    <span id="topic-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded-xl bg-jungle-400/10 border border-jungle-400/30 text-jungle-neon text-xs font-bold uppercase tracking-wider">
+                        <i id="topic-icon" class="fa-solid fa-leaf"></i>
+                        <span id="topic-title">Khái niệm tiêu hóa</span>
+                    </span>
+                </div>
+
+                <!-- Question Text -->
+                <h3 id="question-text" class="text-base sm:text-lg md:text-xl font-extrabold text-white mb-5 leading-relaxed tracking-wide">
+                    Nội dung câu hỏi...
+                </h3>
+
+                <!-- Options List -->
+                <div id="options-container" class="space-y-3 mb-5">
+                    <!-- Options loaded by JS -->
+                </div>
+
+                <!-- Feedback & Explanation Box -->
+                <div id="feedback-box" class="hidden rounded-2xl p-4 mb-5 transition-all duration-300 border">
+                    <div class="flex items-start gap-3">
+                        <div id="feedback-icon" class="text-2xl mt-0.5"></div>
+                        <div class="flex-1">
+                            <h4 id="feedback-title" class="font-extrabold text-sm sm:text-base mb-1"></h4>
+                            <p id="feedback-detail" class="text-xs sm:text-sm leading-relaxed opacity-95"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Next Button (Locked until Correct) -->
+                <div class="flex justify-between items-center">
+                    <div id="lock-hint" class="text-xs text-amber-300/80 font-medium flex items-center gap-1.5">
+                        <i class="fa-solid fa-lock text-amber-400"></i>
+                        <span>Chọn đáp án ĐÚNG để mở khóa câu tiếp theo</span>
+                    </div>
+
+                    <button id="next-btn" onclick="nextQuestion()" disabled class="btn-shine px-6 sm:px-8 py-3 bg-gradient-to-r from-jungle-500 via-jungle-emerald to-jungle-neon text-jungle-950 font-display font-black text-sm sm:text-base rounded-2xl shadow-xl shadow-jungle-emerald/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none hover:scale-105 active:scale-95 transition duration-200 flex items-center gap-2">
+                        <span>CÂU TIẾP THEO</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- ================= RESULT SCREEN ================= -->
+            <div id="result-screen" class="hidden text-center py-6 animate-pop-in">
+                
+                <!-- Trophy Icon with Halo Effect -->
+                <div class="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-6">
+                    <div class="absolute inset-0 bg-amber-400/30 rounded-full blur-2xl animate-pulse-glow"></div>
+                    <div class="relative w-full h-full bg-gradient-to-tr from-amber-500 via-yellow-400 to-yellow-200 rounded-full flex items-center justify-center text-amber-950 text-5xl sm:text-6xl shadow-2xl border-4 border-yellow-200">
+                        <i class="fa-solid fa-trophy animate-bounce"></i>
+                    </div>
+                </div>
+
+                <h2 class="font-display text-2xl sm:text-4xl font-black text-white mb-2 tracking-tight">
+                    XUẤT SẮC HOÀN THÀNH!
+                </h2>
+                <p class="text-emerald-200/90 mb-6 font-medium text-xs sm:text-base">
+                    Bạn đã xuất sắc làm chủ trọn vẹn 7/7 kiến thức về Dinh Dưỡng & Tiêu Hóa!
+                </p>
+
+                <!-- Statistics Box -->
+                <div class="glass-card rounded-2xl p-5 border border-jungle-400/30 max-w-md mx-auto mb-8 shadow-2xl">
+                    <h3 class="font-bold text-jungle-neon mb-3 text-xs uppercase tracking-wider border-b border-jungle-500/20 pb-2">
+                        <i class="fa-solid fa-chart-pie mr-1.5"></i>Thống kê tổng kết
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-black/30 p-3.5 rounded-xl border border-jungle-500/20">
+                            <p class="text-xs text-jungle-300/80 font-semibold mb-0.5">Số câu trả lời</p>
+                            <p class="text-xl font-black text-jungle-neon">7 / 7</p>
+                        </div>
+                        <div class="bg-black/30 p-3.5 rounded-xl border border-amber-500/20">
+                            <p class="text-xs text-amber-300/80 font-semibold mb-0.5">Tổng lượt chọn sai</p>
+                            <p id="total-wrongs" class="text-xl font-black text-amber-400">0</p>
+                        </div>
+                    </div>
+
+                    <div id="performance-eval" class="p-3 bg-jungle-500/20 text-jungle-200 font-bold rounded-xl text-xs sm:text-sm border border-jungle-400/30">
+                        Đánh giá: Rất tuyệt vời!
+                    </div>
+                </div>
+
+                <button onclick="restartQuiz()" class="btn-shine px-8 py-3.5 bg-gradient-to-r from-jungle-500 via-jungle-emerald to-jungle-neon text-jungle-950 font-display font-black text-base rounded-2xl shadow-xl shadow-jungle-emerald/30 hover:scale-105 active:scale-95 transition flex items-center justify-center mx-auto gap-2.5">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>THỬ LẠI BÀI QUIZ</span>
+                </button>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="text-center mt-5 text-xs text-emerald-300/50 font-medium">
+            <p>© Sinh Học Củng Cố | Dinh dưỡng & Tiêu hóa ở động vật</p>
+        </footer>
+
+    </div>
+
+    <!-- JavaScript Quiz Engine -->
+    <script>
+        // 7 Standard Questions for Grade 11 - Lesson 8: Nutrition & Digestion in Animals
+        const quizQuestions = [
+            {
+                id: 1,
+                topic: "4 Giai đoạn dinh dưỡng",
+                icon: "fa-list-ol",
+                question: "1. Quá trình dinh dưỡng ở động vật bao gồm 4 giai đoạn kế tiếp nhau theo trình tự chính xác nào sau đây?",
+                options: [
+                    "A | Tiêu hóa thức ăn ➔ Lấy thức ăn ➔ Hấp thụ chất dinh dưỡng ➔ Đồng hóa.",
+                    "B | Lấy thức ăn ➔ Tiêu hóa thức ăn ➔ Hấp thụ chất dinh dưỡng ➔ Đồng hóa.",
+                    "C | Lấy thức ăn ➔ Hấp thụ chất dinh dưỡng ➔ Tiêu hóa thức ăn ➔ Đồng hóa.",
+                    "D | Đồng hóa ➔ Lấy thức ăn ➔ Tiêu hóa thức ăn ➔ Hấp thụ chất dinh dưỡng."
+                ],
+                correct: 1,
+                explanation: "Chính xác! Trình tự 4 giai đoạn dinh dưỡng ở động vật là: (1) Lấy thức ăn ➔ (2) Tiêu hóa thức ăn ➔ (3) Hấp thụ chất dinh dưỡng ➔ (4) Đồng hóa biến đổi chất dinh dưỡng thành chất sống của cơ thể."
+            },
+            {
+                id: 2,
+                topic: "Động vật chưa có cơ quan tiêu hóa",
+                icon: "fa-bacteria",
+                question: "2. Động vật chưa có cơ quan tiêu hóa (như Bọt biển, Động vật nguyên sinh) tiêu hóa thức ăn theo hình thức nào?",
+                options: [
+                    "A | Tiêu hóa ngoại bào trong lòng túi tiêu hóa.",
+                    "B | Tiêu hóa cơ học phối hợp với tiêu hóa hóa học trong dạ dày.",
+                    "C | Tiêu hóa nội bào nhờ enzyme của lysosome trong không bào tiêu hóa.",
+                    "D | Tiêu hóa ngoại bào trong ống tiêu hóa kéo dài."
+                ],
+                correct: 2,
+                explanation: "Chính xác! Động vật chưa có cơ quan tiêu hóa bắt thức ăn bằng hình thức thực bào tạo thành không bào tiêu hóa, sau đó lysosome gắn vào tiết enzyme để phân giải nội bào."
+            },
+            {
+                id: 3,
+                topic: "Tiêu hóa trong túi tiêu hóa",
+                icon: "fa-wine-glass",
+                question: "3. Ở động vật có túi tiêu hóa (như Thủy tức, San hô, Sứa), quá trình tiêu hóa diễn ra theo trình tự nào?",
+                options: [
+                    "A | Chỉ diễn ra tiêu hóa nội bào bên trong các tế bào thành túi.",
+                    "B | Tiêu hóa ngoại bào trong lòng túi tiêu hóa trước, sau đó các mảnh thức ăn tiếp tục được tiêu hóa nội bào.",
+                    "C | Chỉ diễn ra tiêu hóa ngoại bào nhờ dịch vị tiết ra từ tuyến tụy.",
+                    "D | Tiêu hóa nội bào trước, sau đó các chất cặn bã được đưa ra ngoài để tiêu hóa ngoại bào."
+                ],
+                correct: 1,
+                explanation: "Chính xác! Thức ăn đi qua lỗ miệng vào túi tiêu hóa sẽ được tiêu hóa ngoại bào nhờ enzyme tiết từ tế bào tuyến (biến đổi thành các mảnh nhỏ), sau đó tế bào thành túi lấy vào để tiếp tục tiêu hóa nội bào."
+            },
+            {
+                id: 4,
+                topic: "Tiêu hóa trong ống tiêu hóa",
+                icon: "fa-arrows-left-right-to-line",
+                question: "4. Trong ống tiêu hóa của người và động vật có xương sống, thức ăn được tiêu hóa theo hình thức nào?",
+                options: [
+                    "A | Chỉ diễn ra tiêu hóa nội bào trong tế bào biểu mô ruột.",
+                    "B | Tiêu hóa ngoại bào kết hợp cả tiêu hóa cơ học (nhai, co bóp) và tiêu hóa hóa học (enzyme).",
+                    "C | Chỉ diễn ra tiêu hóa cơ học làm nhỏ thức ăn mà không biến đổi hóa học.",
+                    "D | Chỉ tiêu hóa hóa học nhờ các axit trong dạ dày."
+                ],
+                correct: 1,
+                explanation: "Chính xác! Trong ống tiêu hóa, thức ăn được tiêu hóa ngoại bào nhờ sự phối hợp giữa tiêu hóa cơ học (nhai nghiền, đảo trộn, co bóp) và tiêu hóa hóa học (biến đổi nhờ enzyme dịch tiêu hóa)."
+            },
+            {
+                id: 5,
+                topic: "Ưu điểm của ống tiêu hóa",
+                icon: "fa-star",
+                question: "5. Ưu điểm nổi bật của tiêu hóa trong ống tiêu hóa so với túi tiêu hóa là gì?",
+                options: [
+                    "A | Thức ăn đi theo hai chiều giúp làm tăng cơ hội hấp thụ lại.",
+                    "B | Thức ăn đi theo một chiều từ miệng đến hậu môn không bị trộn lẫn chất thải, dịch tiêu hóa không bị pha loãng.",
+                    "C | Tiêu tốn ít enzyme tiêu hóa hơn và không cần chuyển động cơ học.",
+                    "D | Chất dinh dưỡng được chuyển thẳng trực tiếp vào tế bào mà không cần mạch máu."
+                ],
+                correct: 1,
+                explanation: "Chính xác! Ống tiêu hóa thông một chiều từ miệng đến hậu môn giúp thức ăn không bị trộn lẫn với chất bã cặn, các đoạn ống chuyên hóa giúp dịch tiêu hóa không bị pha loãng."
+            },
+            {
+                id: 6,
+                topic: "Chế độ ăn uống hợp lý",
+                icon: "fa-apple-whole",
+                question: "6. Chế độ ăn uống hợp lý và cân bằng dinh dưỡng cần đảm bảo nguyên tắc quan trọng nào sau đây?",
+                options: [
+                    "A | Ăn càng nhiều chất đạm và chất béo càng tốt để cung cấp năng lượng.",
+                    "B | Chỉ ăn thực phẩm có nguồn gốc từ thực vật để bảo vệ hệ tiêu hóa.",
+                    "C | Đáp ứng đủ nhu cầu dinh dưỡng, cân đối các nhóm chất, dùng thực phẩm sạch và phù hợp với độ tuổi, thể trạng.",
+                    "D | Bỏ bữa sáng để giảm tải áp lực làm việc cho dạ dày và ruột."
+                ],
+                correct: 2,
+                explanation: "Chính xác! Chế độ ăn hợp lý cần cân đối đầy đủ 4 nhóm chất (carbohydrate, protein, lipid, vitamin & khoáng chất), đảm bảo nhu cầu năng lượng, dùng thực phẩm an toàn và thích hợp cho từng đối tượng."
+            },
+            {
+                id: 7,
+                topic: "Bệnh hệ tiêu hóa & Phòng tránh",
+                icon: "fa-shield-halved",
+                question: "7. Biện pháp nào sau đây giúp phòng tránh các bệnh về đường tiêu hóa (như viêm loét dạ dày, nhiễm khuẩn đường ruột)?",
+                options: [
+                    "A | Ăn nhiều đồ quá chua, cay, nóng và uống đồ có cồn trước khi đi ngủ.",
+                    "B | Ăn chín uống sôi, vệ sinh an toàn thực phẩm, vệ sinh răng miệng, tránh căng thẳng thức khuya.",
+                    "C | Vừa ăn vừa làm việc, xem điện thoại hoặc vận động mạnh ngay sau khi ăn.",
+                    "D | Thường xuyên nhịn ăn kéo dài rồi ăn thật nhiều trong một bữa."
+                ],
+                correct: 1,
+                explanation: "Chính xác! Ăn chín uống sôi, dùng thực phẩm an toàn, giữ vệ sinh cá nhân, giữ tinh thần thoải mái, ăn đúng giờ giấc là các biện pháp quan trọng hàng đầu để bảo vệ hệ tiêu hóa khỏe mạnh."
+            }
+        ];
+
+        // State Variables
+        let currentQuestionIndex = 0;
+        let totalWrongAttempts = 0;
+        let isQuestionPassed = false;
+        let isMuted = false;
+
+        // Web Audio API Synthesizer (Pure JS - No external audio file dependence)
+        let audioCtx = null;
+
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const icon = document.getElementById('mute-icon');
+            if (isMuted) {
+                icon.className = 'fa-solid fa-volume-xmark text-rose-400';
+            } else {
+                icon.className = 'fa-solid fa-volume-high text-jungle-300';
+            }
+        }
+
+        // Sound FX: Button Click
+        function playClickSound() {
+            if (isMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } catch (e) { console.log(e); }
+        }
+
+        // Sound FX: Correct Answer (Ding Chime Arpeggio)
+        function playCorrectSound() {
+            if (isMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                
+                // Joyful notes: G5, C6, E6
+                const freqs = [783.99, 1046.50, 1318.51];
+                freqs.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                    
+                    gain.gain.setValueAtTime(0, now + i * 0.08);
+                    gain.gain.linearRampToValueAtTime(0.2, now + i * 0.08 + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.3);
+                    
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    
+                    osc.start(now + i * 0.08);
+                    osc.stop(now + i * 0.08 + 0.35);
+                });
+            } catch (e) { console.log(e); }
+        }
+
+        // Sound FX: Incorrect Answer (Boing Wobble)
+        function playWrongSound() {
+            if (isMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.exponentialRampToValueAtTime(80, now + 0.3);
+
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } catch (e) { console.log(e); }
+        }
+
+        // Sound FX: Victory Fanfare
+        function playVictorySound() {
+            if (isMuted) return;
+            try {
+                const ctx = getAudioContext();
+                const now = ctx.currentTime;
+                const notes = [
+                    { f: 523.25, t: 0 },
+                    { f: 659.25, t: 0.12 },
+                    { f: 783.99, t: 0.24 },
+                    { f: 1046.50, t: 0.36 },
+                    { f: 880.00, t: 0.52 },
+                    { f: 1046.50, t: 0.68 }
+                ];
+
+                notes.forEach(n => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(n.f, now + n.t);
+
+                    gain.gain.setValueAtTime(0.25, now + n.t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + 0.4);
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.start(now + n.t);
+                    osc.stop(now + n.t + 0.45);
+                });
+            } catch (e) { console.log(e); }
+        }
+
+        // Start Quiz
+        function startQuiz() {
+            getAudioContext();
+            playClickSound();
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            currentQuestionIndex = 0;
+            totalWrongAttempts = 0;
+            loadQuestion();
+        }
+
+        // Load Current Question
+        function loadQuestion() {
+            isQuestionPassed = false;
+            const q = quizQuestions[currentQuestionIndex];
+
+            // Update Progress Header
+            document.getElementById('question-number').innerHTML = `<i class="fa-solid fa-layer-group text-jungle-neon"></i> Câu ${currentQuestionIndex + 1} / ${quizQuestions.length}`;
+            document.getElementById('attempt-count').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Chọn sai: ${totalWrongAttempts}`;
+            
+            const progressPercent = ((currentQuestionIndex) / quizQuestions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+
+            // Update Topic Header
+            document.getElementById('topic-title').innerText = q.topic;
+            document.getElementById('topic-icon').className = `fa-solid ${q.icon}`;
+
+            // Update Question
+            document.getElementById('question-text').innerText = q.question;
+
+            // Render Option Buttons
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            q.options.forEach((optText, index) => {
+                const button = document.createElement('button');
+                button.className = `option-btn w-full text-left p-3.5 sm:p-4 rounded-2xl font-medium text-emerald-100 flex items-center justify-between text-xs sm:text-sm leading-relaxed`;
+                button.onclick = () => selectOption(index, button);
+                button.id = `opt-${index}`;
+
+                button.innerHTML = `
+                    <span class="pr-3">${optText}</span>
+                    <span class="icon-indicator text-lg opacity-0 transition-all transform scale-75"><i class="fa-solid fa-circle-check"></i></span>
+                `;
+                container.appendChild(button);
+            });
+
+            // Hide Feedback & Lock Next Button
+            const feedbackBox = document.getElementById('feedback-box');
+            feedbackBox.classList.add('hidden');
+            
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = true;
+
+            const lockHint = document.getElementById('lock-hint');
+            lockHint.classList.remove('hidden');
+        }
+
+        // Handle Option Selection
+        function selectOption(selectedIndex, buttonElem) {
+            if (isQuestionPassed) return; // If already correctly answered, ignore extra clicks
+
+            const q = quizQuestions[currentQuestionIndex];
+            const feedbackBox = document.getElementById('feedback-box');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackDetail = document.getElementById('feedback-detail');
+            const feedbackIcon = document.getElementById('feedback-icon');
+
+            feedbackBox.classList.remove('hidden');
+
+            if (selectedIndex === q.correct) {
+                // ================= CORRECT =================
+                isQuestionPassed = true;
+                playCorrectSound();
+
+                // Highlight Correct Button
+                buttonElem.className = "option-btn w-full text-left p-3.5 sm:p-4 rounded-2xl font-bold text-white flex items-center justify-between text-xs sm:text-sm border-2 border-jungle-neon bg-jungle-500/30 shadow-lg shadow-jungle-neon/20";
+                const indicator = buttonElem.querySelector('.icon-indicator');
+                indicator.innerHTML = '<i class="fa-solid fa-circle-check text-jungle-neon text-xl"></i>';
+                indicator.classList.remove('opacity-0', 'scale-75');
+                indicator.classList.add('scale-100');
+
+                // Disable all option buttons after correct answer
+                document.querySelectorAll('.option-btn').forEach(btn => btn.disabled = true);
+
+                // Show Success Feedback
+                feedbackBox.className = "rounded-2xl p-4 mb-5 transition-all duration-300 border bg-jungle-500/20 border-jungle-400/40 text-emerald-100 animate-pop-in";
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-jungle-neon"></i>';
+                feedbackTitle.innerText = "CHÍNH XÁC!";
+                feedbackDetail.innerText = q.explanation;
+
+                // Unlock Next Button
+                const nextBtn = document.getElementById('next-btn');
+                nextBtn.disabled = false;
+                nextBtn.classList.add('animate-bounce');
+
+                document.getElementById('lock-hint').classList.add('hidden');
+
+                // Burst Confetti
+                confetti({
+                    particleCount: 50,
+                    spread: 70,
+                    origin: { y: 0.75 },
+                    colors: ['#00ff87', '#10b981', '#34d399', '#fef08a']
+                });
+
+            } else {
+                // ================= INCORRECT =================
+                totalWrongAttempts++;
+                document.getElementById('attempt-count').innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Chọn sai: ${totalWrongAttempts}`;
+                playWrongSound();
+
+                // Shake Main Panel
+                const mainPanel = document.getElementById('main-panel');
+                mainPanel.classList.remove('animate-shake');
+                void mainPanel.offsetWidth; // force reflow
+                mainPanel.classList.add('animate-shake');
+
+                // Lock & Mark Incorrect Button Red
+                buttonElem.className = "option-btn w-full text-left p-3.5 sm:p-4 rounded-2xl font-medium text-rose-200 flex items-center justify-between text-xs sm:text-sm border-2 border-rose-500/60 bg-rose-500/20 cursor-not-allowed opacity-75";
+                const indicator = buttonElem.querySelector('.icon-indicator');
+                indicator.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-400 text-xl"></i>';
+                indicator.classList.remove('opacity-0', 'scale-75');
+                indicator.classList.add('scale-100');
+                
+                // Disable this wrong button specifically so player cannot re-click it
+                buttonElem.disabled = true;
+
+                // Show Warning Feedback
+                feedbackBox.className = "rounded-2xl p-4 mb-5 transition-all duration-300 border bg-rose-500/20 border-rose-400/40 text-rose-100 animate-pop-in";
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i>';
+                feedbackTitle.innerText = "CHƯA CHÍNH XÁC!";
+                feedbackDetail.innerText = "Lựa chọn này chưa đúng. Lựa chọn đã bị khóa, hãy đọc kỹ và thử phương án khác!";
+            }
+        }
+
+        // Proceed to Next Question
+        function nextQuestion() {
+            if (!isQuestionPassed) return;
+            playClickSound();
+
+            document.getElementById('next-btn').classList.remove('animate-bounce');
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < quizQuestions.length) {
+                loadQuestion();
+            } else {
+                showResultScreen();
+            }
+        }
+
+        // Show Final Victory Screen
+        function showResultScreen() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            document.getElementById('total-wrongs').innerText = totalWrongAttempts;
+
+            const evalBox = document.getElementById('performance-eval');
+            if (totalWrongAttempts === 0) {
+                evalBox.innerText = "Đánh giá: Xuất sắc tuyệt đối! Bạn là cao thủ Sinh học nắm vững 100% bài học!";
+                evalBox.className = "p-3 bg-jungle-500/30 text-jungle-neon font-bold rounded-xl text-xs sm:text-sm border border-jungle-400/50";
+            } else if (totalWrongAttempts <= 3) {
+                evalBox.innerText = "Đánh giá: Rất xuất sắc! Khả năng tư duy và loại trừ đáp án rất tốt!";
+                evalBox.className = "p-3 bg-teal-500/30 text-teal-200 font-bold rounded-xl text-xs sm:text-sm border border-teal-400/50";
+            } else {
+                evalBox.innerText = "Đánh giá: Hoàn thành bài học! Hãy ôn lại các khái niệm để ghi nhớ lâu hơn nhé!";
+                evalBox.className = "p-3 bg-amber-500/30 text-amber-200 font-bold rounded-xl text-xs sm:text-sm border border-amber-400/50";
+            }
+
+            playVictorySound();
+
+            // Continuous Confetti
+            const duration = 3.5 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#00ff87', '#10b981', '#f59e0b', '#3b82f6']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#00ff87', '#10b981', '#f59e0b', '#3b82f6']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+        }
+
+        // Restart Quiz
+        function restartQuiz() {
+            playClickSound();
+            document.getElementById('result-screen').classList.add('hidden');
+            startQuiz();
+        }
+
+        // Background Particles Animation Canvas
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.speedY = (Math.random() - 0.5) * 0.4 - 0.2;
+                this.opacity = Math.random() * 0.5 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0) this.y = canvas.height;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(0, 255, 135, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 40; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        animateParticles();
+    </script>
+</body>
+</html>
